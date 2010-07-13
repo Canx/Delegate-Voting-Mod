@@ -1,5 +1,30 @@
 <!-- INCLUDE ucp_header.html -->
  
-Aquí va la pestaña de delegación
+<form id="ucp" method="post" action="{S_UCP_ACTION}">
+   <fieldset>
+      <legend>Delegación</legend>
+      <dl>
+         <dt><label>¿Quieres ser delegado?</label></dt>
+            <dd>
+            SI<input type="radio" name="delegado" id="S" /></li>
+            NO<input type="radio" name="delegado" id="N" /></li>
+           </dd>
+         </dt>
+      </dl>
+      <dl>
+         <dt><label>Delego en el usuario:</label></dt>
+            <dd><input type="text" name="usuario" id="" />
+            </dd>
+         </dt>
+      </dl>
+   </fieldset>
+
+   <fieldset class="submit-buttons">
+      {S_HIDDEN_FIELDS}             
+      <input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+      <input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+      {S_FORM_TOKEN}
+   </fieldset>
+</form>
  
 <!-- INCLUDE ucp_footer.html -->
