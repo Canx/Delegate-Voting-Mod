@@ -17,12 +17,8 @@ class ucp_delegate_info
             'filename' => 'ucp_delegate',
             'title'    => 'UCP_DELEGATE',
             'version'  => '0.1',
-            'modes'    => array('index' => array('title' => 'UCP_DELEGATE_INDEX_TITLE',
-                                                 'auth'  => '', 
-                                                 'cat'   => array('UCP_DELEGATE')
-                                                )
-	 	               )
-                    );
+            'modes'    => array('select' => array('title' => 'UCP_DELEGATE_SELECT', 'auth' => '', 'cat' => array('UCP_DELEGATE'))
+	 	             );
     }
  
     function install()

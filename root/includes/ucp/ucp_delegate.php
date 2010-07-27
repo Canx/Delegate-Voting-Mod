@@ -8,13 +8,23 @@ class ucp_delegate
    {
       global $db, $user, $auth, $template;
       global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-      switch($mode)
-      {
-         case 'index':
-            $this->page_title = 'UCP_DELEGATE';
-            $this->tpl_name = 'ucp_delegate';
-            break;
-      }
+      
+      // Aqui va el código
+      
+      // Variables del template: {USUARIO}, {ES_DELEGADO}
+      
+      // TODO: Probar a asignar las variables
+      
+      $template->assign_vars(array(
+									'USUARIO' => 'PRUEBA',
+									'ES_DELEGADO' => 1
+								  )
+							);
+      
+      //
+      
+      $this->tpl_name = 'ucp_delegate_' . $mode;
+	  $this->page_title = 'UCP_DELEGATE_' . strtoupper($mode);
  
    }
 }
