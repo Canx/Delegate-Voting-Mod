@@ -11,7 +11,8 @@ class ucp_delegate
       
       $username	= request_var('username', '', true);
       $submit = (isset($_POST['submit'])) ? true : false;
-      	  
+      	 
+      // Cargamos la información de delegación y si no existe la creamos con valores vacíos.
 	  $sql = 'SELECT delegated_user, is_delegate
 	          FROM ' . POLL_DELEGATE_TABLE . '
 	          WHERE user_id = ' . $user->data['user_id'];   
@@ -20,20 +21,19 @@ class ucp_delegate
 	  $db->sql_freeresult($result);
 		 
 	  if (!$fila) {
-	    // TODO: Si no hay resultados se crea la fila con los valores por defecto: no es delegado y no tiene delegados.
 		$sql = 'INSERT INTO ' . POLL_DELEGATE_TABLE . '
 		        SET delegated_user = null, is_delegate = 0, user_id = ' . $user->data['user_id'];
 		$db->sql_query($sql);
 			
 		$delegado_id = 0;
 		$es_delegado = 0;
-     }
-	     
+     }    
      else {
 		 $delegado_id = $fila['delegated_user'];
 		 $es_delegado = $fila['is_delegate'];
 	 }
 	 
+	 // Cargamos el nombre de usuario a partir del user_id
 	 if ($delegado_id) {
 		 $sql = 'SELECT username FROM ' . USERS_TABLE . '
 		         WHERE user_id = "' . $delegado_id . '"';
@@ -50,9 +50,9 @@ class ucp_delegate
 
 	 }
 		 	  
-     // TODO: Guardar datos nuevos
+     // Al hacer submit guardamos los nuevos valores del formulario.
      if ($submit) {
-		// TODO: Si no han cambiado los valores no hacer acceso a datos
+		// TODO: Si no han cambiado los valores no guardar nada.
         $delegado = request_var('delegado','');
         $es_delegado = request_var('es_delegado', 0);
          
@@ -66,12 +66,15 @@ class ucp_delegate
 			 
 			// TODO: Controlar error si no existe el usuario.
 			if ($fila) {
+			// TODO: Utilizar $db->sql_build_array
 			$sql = 'UPDATE  ' . POLL_DELEGATE_TABLE . '
 					SET delegated_user = ' . $fila['user_id'] . ',
 					    is_delegate = ' . $es_delegado . ',
 					    user_id = ' . $user->data['user_id'];
 			$db->sql_query($sql);	
-			}	   
+			}
+			
+			// TODO: Actualizar el total de votos delegados 
 		 }
 	  }
 	  
@@ -80,9 +83,6 @@ class ucp_delegate
 									'ES_DELEGADO' => $es_delegado
 								  )
 							);
-      
-      //
-      
       $this->tpl_name = 'ucp_delegate_' . $mode;
 	  $this->page_title = 'UCP_DELEGATE_' . strtoupper($mode);
  
