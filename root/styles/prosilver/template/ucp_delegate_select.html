@@ -17,6 +17,15 @@
             </dd>
          </dt>
       </dl>
+      <dl>
+		<dt><label>Lista de delegados:</label></dt>
+			<dd><select size="10" name="delegate_select">
+				<!-- BEGIN delegate -->
+				<option {delegate.SELECTED} value="{delegate.DELEGATE_ID}">[{delegate.DELEGATED_VOTES}] {delegate.DELEGATE}</option>
+				<!-- END delegate -->
+			</select>
+			</dd>
+      </dl>
    </fieldset>
 
    <fieldset class="submit-buttons">

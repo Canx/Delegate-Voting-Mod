@@ -11,6 +11,7 @@ class ucp_delegate
       
       $username	= request_var('username', '', true);
       $submit = (isset($_POST['submit'])) ? true : false;
+      $delegado = '';
       	 
       // Cargamos la información de delegación y si no existe la creamos con valores vacíos.
 	  $sql = 'SELECT delegated_user, is_delegate
@@ -22,7 +23,7 @@ class ucp_delegate
 		 
 	  if (!$fila) {
 		$sql = 'INSERT INTO ' . POLL_DELEGATE_TABLE . '
-		        SET delegated_user = null, is_delegate = 0, user_id = ' . $user->data['user_id'];
+		        SET delegated_user = 0, is_delegate = 0, delegated_votes = 0, user_id = ' . $user->data['user_id'];
 		$db->sql_query($sql);
 			
 		$delegado_id = 0;
@@ -32,52 +33,80 @@ class ucp_delegate
 		 $delegado_id = $fila['delegated_user'];
 		 $es_delegado = $fila['is_delegate'];
 	 }
-	 
-	 // Cargamos el nombre de usuario a partir del user_id
-	 if ($delegado_id) {
-		 $sql = 'SELECT username FROM ' . USERS_TABLE . '
-		         WHERE user_id = "' . $delegado_id . '"';
-		 $result = $db->sql_query($sql);
-	     $fila = $db->sql_fetchrow($result);
-	     $db->sql_freeresult($result); 
-	      
-	     if ($fila) {
-			 $delegado = $fila['username'];
-		 }
-		 else {
-			 $delegado = '';
-		 }
-
-	 }
 		 	  
      // Al hacer submit guardamos los nuevos valores del formulario.
      if ($submit) {
-		// TODO: Si no han cambiado los valores no guardar nada.
-        $delegado = request_var('delegado','');
-        $es_delegado = request_var('es_delegado', 0);
-         
-        if ($delegado) {
-	    	// TODO: Comprobar que el usuario tenga delegación activada.
-			$sql = 'SELECT user_id FROM ' . USERS_TABLE . '
-					WHERE username = "' . $delegado . '"';
-			$result = $db->sql_query($sql);
-			$fila = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			 
+        $nuevo_delegado_id = request_var('delegate_select',0);
+        $nuevo_es_delegado = request_var('es_delegado', 0);
+        print "NUEVO DELEGADO ID:" . $nuevo_delegado_id;
+        print "DELEGADO_ID:" . $delegado_id;
+        
+        // es_delegado ha cambiado?
+        if ($nuevo_es_delegado != $es_delegado) {
+			$sql = 'UPDATE ' . POLL_DELEGATE_TABLE . '
+					SET is_delegate = ' . $nuevo_es_delegado . '
+					WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+			$es_delegado = $nuevo_es_delegado;
+		}
+		
+		// delegado_id ha cambiado?
+        if ($nuevo_delegado_id != $delegado_id) {
+			// TODO: Comprobar que el usuario tenga delegación activada.
 			// TODO: Controlar error si no existe el usuario.
-			if ($fila) {
 			// TODO: Utilizar $db->sql_build_array
+			
+			
 			$sql = 'UPDATE  ' . POLL_DELEGATE_TABLE . '
-					SET delegated_user = ' . $fila['user_id'] . ',
-					    is_delegate = ' . $es_delegado . ',
-					    user_id = ' . $user->data['user_id'];
-			$db->sql_query($sql);	
+					SET delegated_user = ' . $nuevo_delegado_id . '
+					WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+			
+			if ($delegado_id) {
+				$sql = 'UPDATE ' . POLL_DELEGATE_TABLE . '
+						SET delegated_votes = delegated_votes - 1
+						WHERE user_id = ' . $delegado_id;
+				$db->sql_query($sql);
 			}
 			
-			// TODO: Actualizar el total de votos delegados 
-		 }
+			if ($nuevo_delegado_id) {
+				$sql = 'UPDATE ' . POLL_DELEGATE_TABLE . '
+						SET delegated_votes = delegated_votes + 1
+						WHERE user_id = ' . $nuevo_delegado_id;
+				$db->sql_query($sql);
+			}
+			
+			$delegado_id = $nuevo_delegado_id;
+		}
 	  }
 	  
+	  // TODO: Cargamos la lista de delegados en el delegate_row y activamos la que coincida con el delegado actual.
+	 $sql = 'SELECT users.username, users.user_id, polldel.delegated_votes 
+	         FROM ' . USERS_TABLE . ' AS users,' . POLL_DELEGATE_TABLE . ' AS polldel
+	         WHERE users.user_id = polldel.user_id
+	         AND is_delegate = 1
+	         ORDER BY delegated_votes DESC';
+	 $result = $db->sql_query($sql);
+	 
+	 // TODO: Si no hay resultados damos error de que no hay delegados.
+	 while ( $row = $db->sql_fetchrow($result) ) {
+		
+		if ($row['user_id'] == $delegado_id) {
+			$selected = 'selected';
+			$delegado = $row['username'];
+		}
+		else {
+			$selected = '';
+		}
+		$template->assign_block_vars('delegate', array('DELEGATE' => $row['username'],
+												       'DELEGATE_ID' => $row['user_id'],
+												       'DELEGATED_VOTES' => $row['delegated_votes'],
+												       'SELECTED' => $selected)
+									);
+														
+	 }
+	 $db->sql_freeresult($result);
+	 
       $template->assign_vars(array(
 									'DELEGADO' => $delegado,
 									'ES_DELEGADO' => $es_delegado
