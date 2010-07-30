@@ -12,14 +12,15 @@
          </dt>
       </dl>
       <dl>
-         <dt><label>Delego en el usuario:</label></dt>
-            <dd><input type="text" name="delegado" id="" value="{DELEGADO}" />
+         <dt><label>Delegado actual:</label></dt>
+            <dd><input readonly type="text" name="delegado" id="" value="{DELEGADO}" />
             </dd>
          </dt>
       </dl>
       <dl>
 		<dt><label>Lista de delegados:</label></dt>
 			<dd><select size="10" name="delegate_select">
+				<option value="0">Ninguno</option>
 				<!-- BEGIN delegate -->
 				<option {delegate.SELECTED} value="{delegate.DELEGATE_ID}">[{delegate.DELEGATED_VOTES}] {delegate.DELEGATE}</option>
 				<!-- END delegate -->

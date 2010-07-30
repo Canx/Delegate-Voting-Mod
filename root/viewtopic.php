@@ -753,8 +753,18 @@ if (!empty($topic_data['poll_start']))
 				continue;
 			}
 
+            // Delegate-Mod
+			$sql = 'SELECT delegated_votes 
+					FROM ' . POLL_DELEGATE_TABLE . '
+					WHERE user_id = ' . (int) $user->data['user_id'];
+			$result = $db->sql_query($sql);
+			$fila = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$delegated_votes = (int) $fila['delegated_votes'];
+			// Delegate-Mod
+			
 			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-				SET poll_option_total = poll_option_total + 1
+				SET poll_option_total = poll_option_total + 1 + ' . $delegated_votes .' 
 				WHERE poll_option_id = ' . (int) $option . '
 					AND topic_id = ' . (int) $topic_id;
 			$db->sql_query($sql);
@@ -778,7 +788,7 @@ if (!empty($topic_data['poll_start']))
 			if (!in_array($option, $voted_id))
 			{
 				$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-					SET poll_option_total = poll_option_total - 1
+					SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes .' 
 					WHERE poll_option_id = ' . (int) $option . '
 						AND topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
