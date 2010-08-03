@@ -752,19 +752,58 @@ if (!empty($topic_data['poll_start']))
 			{
 				continue;
 			}
+		
 
-            // Delegate-Mod
-			$sql = 'SELECT delegated_votes 
+            // Delegate-Mod 
+            
+            // @todo 2 Separar en una función el sistema de delegación de voto.
+            // VARIABLES: $db, $user_data['user_id'], $topic_id, $option
+            
+			// Comenzamos la transacción
+			$db->sql_transaction('begin');
+			
+			// Miro cuantos votos delegados tiene el usuario actual
+			// @todo 1 mirar solo los votos delegados que no han votado!
+			$sql = 'SELECT delegated_votes, delegated_user 
 					FROM ' . POLL_DELEGATE_TABLE . '
 					WHERE user_id = ' . (int) $user->data['user_id'];
 			$result = $db->sql_query($sql);
 			$fila = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 			$delegated_votes = (int) $fila['delegated_votes'];
+			$delegated_user = (int) $fila['delegated_user'];
+			
+			// Si mi delegado ha votado le resto mi voto personal y mis votos delegados antes de votar
+			$sql = 'SELECT poll_option_id
+					FROM ' . POLL_VOTES_TABLE . ' 
+					WHERE topic_id = ' . (int) $topic_id . '
+					AND vote_user_id = ' . (int) $delegated_user;
+			$result = $db->sql_query($sql);
+			$fila = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			if ( $fila ) {
+				$delegated_user_vote = $fila['poll_option_id'];
+				$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
+				        SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes . '
+				        WHERE topic_id = ' . (int) $topic_id . '
+				        AND poll_option_id = ' . (int) $delegated_user_vote;
+				$db->sql_query($sql);
+			}
+			
+			// @todo 1 Si soy delegado cuento los votantes que han delegado en mí que ya han votado
+			//       y los resto de mi total.
+			$sql = 'SELECT *
+			        FROM 
+			
+			
+			
 			// Delegate-Mod
 			
+			
+			
+			
 			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-				SET poll_option_total = poll_option_total + 1 + ' . $delegated_votes .' 
+				SET poll_option_total = poll_option_total + 1 + ' . $delegated_votes . ' 
 				WHERE poll_option_id = ' . (int) $option . '
 					AND topic_id = ' . (int) $topic_id;
 			$db->sql_query($sql);
@@ -788,7 +827,7 @@ if (!empty($topic_data['poll_start']))
 			if (!in_array($option, $voted_id))
 			{
 				$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-					SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes .' 
+					SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes .'
 					WHERE poll_option_id = ' . (int) $option . '
 						AND topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
@@ -803,6 +842,9 @@ if (!empty($topic_data['poll_start']))
 				}
 			}
 		}
+		
+		// Acabamos la transacción de voto
+		$db->sql_transaction('commit');
 
 		if ($user->data['user_id'] == ANONYMOUS && !$user->data['is_bot'])
 		{

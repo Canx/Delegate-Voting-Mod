@@ -16,4 +16,4 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// TODO: Refactorizar funciones de voto de viewtopic.php y ucp_delegate.php aquí
+// @todo 2 Refactorizar funciones de voto de viewtopic.php y ucp_delegate.php aquí

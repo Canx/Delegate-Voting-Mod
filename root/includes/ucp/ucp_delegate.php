@@ -38,8 +38,6 @@ class ucp_delegate
      if ($submit) {
         $nuevo_delegado_id = request_var('delegate_select',0);
         $nuevo_es_delegado = request_var('es_delegado', 0);
-        print "NUEVO DELEGADO ID:" . $nuevo_delegado_id;
-        print "DELEGADO_ID:" . $delegado_id;
         
         // es_delegado ha cambiado?
         if ($nuevo_es_delegado != $es_delegado) {
@@ -52,9 +50,11 @@ class ucp_delegate
 		
 		// delegado_id ha cambiado?
         if ($nuevo_delegado_id != $delegado_id) {
-			// TODO: Comprobar que el usuario tenga delegación activada.
-			// TODO: Controlar error si no existe el usuario.
-			// TODO: Utilizar $db->sql_build_array
+			// @todo 1 Delegar no solo mi voto, también los votos de quien han delegado en mí.
+			// @todo 1 Al cambiar de delegado he de cambiar el voto de las votaciones activas que no he votado individualmente a lo que ha votado el nuevo delegado
+			// @todo 2 Comprobar que el usuario tenga delegación activada.
+			// @todo 1 Controlar error si no existe el usuario.
+			// @todo 3 Utilizar $db->sql_build_array
 			
 			
 			$sql = 'UPDATE  ' . POLL_DELEGATE_TABLE . '
@@ -79,8 +79,7 @@ class ucp_delegate
 			$delegado_id = $nuevo_delegado_id;
 		}
 	  }
-	  
-	  // TODO: Cargamos la lista de delegados en el delegate_row y activamos la que coincida con el delegado actual.
+	 
 	 $sql = 'SELECT users.username, users.user_id, polldel.delegated_votes 
 	         FROM ' . USERS_TABLE . ' AS users,' . POLL_DELEGATE_TABLE . ' AS polldel
 	         WHERE users.user_id = polldel.user_id
@@ -88,7 +87,7 @@ class ucp_delegate
 	         ORDER BY delegated_votes DESC';
 	 $result = $db->sql_query($sql);
 	 
-	 // TODO: Si no hay resultados damos error de que no hay delegados.
+	 // @todo 2 Si no hay resultados damos error de que no hay delegados.
 	 while ( $row = $db->sql_fetchrow($result) ) {
 		
 		if ($row['user_id'] == $delegado_id) {
