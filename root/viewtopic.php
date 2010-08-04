@@ -758,6 +758,7 @@ if (!empty($topic_data['poll_start']))
 		
 
             // Delegate-Mod 
+            // @ todo 2 Antes de votar, si mi delegado ha votado he de poder ver su voto o saber que no ha votado.
             
             // @todo 2 Separar en una función el sistema de delegación de voto.
             // VARIABLES: $db, $user_data['user_id'], $topic_id, $option

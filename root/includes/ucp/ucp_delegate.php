@@ -41,6 +41,7 @@ class ucp_delegate
         
         // es_delegado ha cambiado?
         if ($nuevo_es_delegado != $es_delegado) {
+			// @todo 1 Si cambio de delegado he de cambiar los votos de las votaciones activas en las que no he votado a las que haya dado mi voto a mi antiguo delegado!
 			$sql = 'UPDATE ' . POLL_DELEGATE_TABLE . '
 					SET is_delegate = ' . $nuevo_es_delegado . '
 					WHERE user_id = ' . $user->data['user_id'];

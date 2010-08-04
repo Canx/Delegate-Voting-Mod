@@ -1,9 +1,7 @@
 #!/bin/bash
-for fichero in `find . -name *.php`; do
-    echo "---------------------------------------------------"
-    echo $fichero":"
-    echo "---------------------------------------------------"
-	cat $fichero | grep "@todo" | sed -e 's/^[ \t]*\/\/[ \t]*@todo//' | sort -n
+for fichero in `find . -name '*.php'`; do
+	cat $fichero | grep -m1 "@todo" | sed -e 's:.*:--------- '$fichero' ---------:'
+	cat -n $fichero | grep "@todo" | sed -e 's:^[ /t]*\([0-9]*\):linea \1:' -e 's:[ \t]*<!-- @todo \([0-9]\)\([ \ta-z]*\)-->:\tP\1\2:' -e 's:[ \t]*// @todo :\tP:' | sort -n
 done
 
 # TODO: Colorear
