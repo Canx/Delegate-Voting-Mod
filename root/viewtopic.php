@@ -746,6 +746,9 @@ if (!empty($topic_data['poll_start']))
 			trigger_error($message);
 		}
 
+		// Comenzamos la transacción
+		$db->sql_transaction('begin');
+		
 		foreach ($voted_id as $option)
 		{
 			if (in_array($option, $cur_voted_id))
@@ -758,13 +761,10 @@ if (!empty($topic_data['poll_start']))
             
             // @todo 2 Separar en una función el sistema de delegación de voto.
             // VARIABLES: $db, $user_data['user_id'], $topic_id, $option
-            
-			// Comenzamos la transacción
-			$db->sql_transaction('begin');
 			
 			// Miro cuantos votos delegados tiene el usuario actual
 			// @todo 1 mirar solo los votos delegados que no han votado!
-			$sql = 'SELECT delegated_votes, delegated_user 
+			$sql = 'SELECT delegated_votes, delegated_user, is_delegate 
 					FROM ' . POLL_DELEGATE_TABLE . '
 					WHERE user_id = ' . (int) $user->data['user_id'];
 			$result = $db->sql_query($sql);
@@ -772,8 +772,27 @@ if (!empty($topic_data['poll_start']))
 			$db->sql_freeresult($result);
 			$delegated_votes = (int) $fila['delegated_votes'];
 			$delegated_user = (int) $fila['delegated_user'];
+			$is_delegate = (int) $fila['is_delegate'];
 			
-			// Si mi delegado ha votado le resto mi voto personal y mis votos delegados antes de votar
+			// Si NO SOY DELEGADO no he de tener votos delegados
+			if (!$is_delegate) {
+				$delegated_votes = 0;
+			}
+			
+			// Si SOY DELEGADO cuento los votantes que han delegado en mí que ya han votado y los resto de mi total.
+			else {	
+				$sql = 'SELECT COUNT(user_id) AS direct_vote
+						FROM ' . POLL_DELEGATE_TABLE . ' AS delegate
+						INNER JOIN ' . POLL_VOTES_TABLE . ' AS vote
+						ON (delegate.user_id = vote.vote_user_id)
+						WHERE vote.topic_id = ' . (int) $topic_id . '
+						AND delegate.delegated_user = ' . (int) $user->data['user_id'];
+				$result = $db->sql_query($sql);
+				$fila = $db->sql_fetchrow($result);
+				$delegated_votes -= $fila['direct_vote'];
+			}
+			
+			// Si mi delegado ha votado le resto mi voto personal antes de votar
 			$sql = 'SELECT poll_option_id
 					FROM ' . POLL_VOTES_TABLE . ' 
 					WHERE topic_id = ' . (int) $topic_id . '
@@ -790,16 +809,7 @@ if (!empty($topic_data['poll_start']))
 				$db->sql_query($sql);
 			}
 			
-			// @todo 1 Si soy delegado cuento los votantes que han delegado en mí que ya han votado
-			//       y los resto de mi total.
-			$sql = 'SELECT *
-			        FROM 
-			
-			
-			
 			// Delegate-Mod
-			
-			
 			
 			
 			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
