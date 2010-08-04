@@ -763,7 +763,6 @@ if (!empty($topic_data['poll_start']))
             // VARIABLES: $db, $user_data['user_id'], $topic_id, $option
 			
 			// Miro cuantos votos delegados tiene el usuario actual
-			// @todo 1 mirar solo los votos delegados que no han votado!
 			$sql = 'SELECT delegated_votes, delegated_user, is_delegate 
 					FROM ' . POLL_DELEGATE_TABLE . '
 					WHERE user_id = ' . (int) $user->data['user_id'];
