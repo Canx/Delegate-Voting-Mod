@@ -17,6 +17,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_voting.' . $phpEx); // Delegate-Mod
 
 // Start session management
 $user->session_begin();
@@ -746,71 +747,15 @@ if (!empty($topic_data['poll_start']))
 			trigger_error($message);
 		}
 
-		// Comenzamos la transacción
-		$db->sql_transaction('begin');
-		
+		$db->sql_transaction('begin'); // Delegate-Mod
 		foreach ($voted_id as $option)
 		{
 			if (in_array($option, $cur_voted_id))
 			{
 				continue;
 			}
-		
-
-            // Delegate-Mod 
             // @ todo 2 Antes de votar, si mi delegado ha votado he de poder ver su voto o saber que no ha votado.
-            
-            // @todo 2 Separar en una función el sistema de delegación de voto.
-            // VARIABLES: $db, $user_data['user_id'], $topic_id, $option
-			
-			// Miro cuantos votos delegados tiene el usuario actual
-			$sql = 'SELECT delegated_votes, delegated_user, is_delegate 
-					FROM ' . POLL_DELEGATE_TABLE . '
-					WHERE user_id = ' . (int) $user->data['user_id'];
-			$result = $db->sql_query($sql);
-			$fila = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			$delegated_votes = (int) $fila['delegated_votes'];
-			$delegated_user = (int) $fila['delegated_user'];
-			$is_delegate = (int) $fila['is_delegate'];
-			
-			// Si NO SOY DELEGADO no he de tener votos delegados
-			if (!$is_delegate) {
-				$delegated_votes = 0;
-			}
-			
-			// Si SOY DELEGADO cuento los votantes que han delegado en mí que ya han votado y los resto de mi total.
-			else {	
-				$sql = 'SELECT COUNT(user_id) AS direct_vote
-						FROM ' . POLL_DELEGATE_TABLE . ' AS delegate
-						INNER JOIN ' . POLL_VOTES_TABLE . ' AS vote
-						ON (delegate.user_id = vote.vote_user_id)
-						WHERE vote.topic_id = ' . (int) $topic_id . '
-						AND delegate.delegated_user = ' . (int) $user->data['user_id'];
-				$result = $db->sql_query($sql);
-				$fila = $db->sql_fetchrow($result);
-				$delegated_votes -= $fila['direct_vote'];
-			}
-			
-			// Si mi delegado ha votado le resto mi voto personal antes de votar
-			$sql = 'SELECT poll_option_id
-					FROM ' . POLL_VOTES_TABLE . ' 
-					WHERE topic_id = ' . (int) $topic_id . '
-					AND vote_user_id = ' . (int) $delegated_user;
-			$result = $db->sql_query($sql);
-			$fila = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-			if ( $fila ) {
-				$delegated_user_vote = $fila['poll_option_id'];
-				$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-				        SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes . '
-				        WHERE topic_id = ' . (int) $topic_id . '
-				        AND poll_option_id = ' . (int) $delegated_user_vote;
-				$db->sql_query($sql);
-			}
-			
-			// Delegate-Mod
-			
+            $delegated_votes = calc_delegated_votes($db, $topic_id, $user->data['user_id']); // Delegate-Mod
 			
 			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
 				SET poll_option_total = poll_option_total + 1 + ' . $delegated_votes . ' 
@@ -853,8 +798,7 @@ if (!empty($topic_data['poll_start']))
 			}
 		}
 		
-		// Acabamos la transacción de voto
-		$db->sql_transaction('commit');
+		$db->sql_transaction('commit'); // Delegate-Mod
 
 		if ($user->data['user_id'] == ANONYMOUS && !$user->data['is_bot'])
 		{
