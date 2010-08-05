@@ -1,33 +1,14 @@
 #!/bin/bash
+##################################################
+# Coloreador de todo's, by Canx
+#
+# El formato de los comentarios ha de ser del tipo
+# <!-- @todo P<1|2|3> <comentario> -->
+# o bien 
+# // @todo P<1|2|3> <comentario> 
+###################################################
+
 for fichero in `find . -name '*.php'`; do
-	cat $fichero | grep -m1 "@todo" | sed -e 's:.*:--------- '$fichero' ---------:'
-	cat -n $fichero | grep "@todo" | sed -e 's:^[ /t]*\([0-9]*\):linea \1:' -e 's:[ \t]*<!-- @todo \([0-9]\)\([ \ta-z]*\)-->:\tP\1\2:' -e 's:[ \t]*// @todo :\tP:' | sort -n
+	cat $fichero | grep -m1 "@todo" | sed -e 's:.*:'`printf "\033[37m"`'--- '$fichero' ---'`printf "\033[0m"`' :'
+	cat -n $fichero | grep "@todo" | sed -e 's:^[ /t]*\([0-9]*\):linea \1:' -e 's:[ \t]*<!-- @todo \([0-9]\)\([ \ta-z]*\)-->:\tP\1\2:' -e 's:[ \t]*// @todo :\tP:' 	| sort -n | sed -e 's/.*P1.*/'`printf "\033[31m"`'&'`printf "\033[0m"`'/' | sed -e 's/.*P2.*/'`printf "\033[33m"`'&'`printf "\033[0m"`'/' | sed -e 's/.*P3.*/'`printf "\033[34m"`'&'`printf "\033[0m"`'/'
 done
-
-# TODO: Colorear
-
-# IDEAS
-#$ mkdir testcolor
-#$ cd testcolor
-#$ echo "LINE 001 START 00:01 END 00:11" > mylog
-#$ echo "LINE 002 START 01:01 END 01:11" >> mylog
-#$ echo "LINE 003 START 02:01 END 02:11" >> mylog
-#$ echo "LINE 004 START 03:01 END 03:11" >> mylog
-#$ echo "LINE 005 START 04:01 END 04:11" >> mylog
-#$ cat mylog
-#LINE 001 START 00:01 END 00:11
-#LINE 002 START 01:01 END 01:11
-#LINE 003 START 02:01 END 02:11
-#LINE 004 START 03:01 END 03:11
-#LINE 005 START 04:01 END 04:11
-#$ cat mylog | sed ''/START/s//`printf "\033[32mSTART\033[0m"`/'' > mylog
-#$ cat mylog
-#LINE 001 START 00:01 END 00:11
-#LINE 002 START 01:01 END 01:11
-#LINE 003 START 02:01 END 02:11
-#LINE 004 START 03:01 END 03:11
-#LINE 005 START 04:01 END 04:11
-#$
-#View Original: http://www.unix.com/unix-dummies-questions-answers/134824-using-sed-change-specific-words-#color.html#ixzz0lkxUK682
-
-
