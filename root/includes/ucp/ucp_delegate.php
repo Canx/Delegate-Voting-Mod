@@ -13,7 +13,7 @@ class ucp_delegate
       $submit = (isset($_POST['submit'])) ? true : false;
       $delegado = '';
       
-	  // @todo 1 Refactorizar en functions_voting.php
+	
       	 
       // Cargamos la información de delegación y si no existe la creamos con valores vacíos.
 	  $sql = 'SELECT delegated_user, is_delegate
@@ -58,7 +58,7 @@ class ucp_delegate
 			// @todo 3 Utilizar $db->sql_build_array
 			
 			
-			// @todo 1 Si cambio de delegado he de cambiar los votos de las votaciones activas en las que no he votado a las que haya dado mi voto a mi antiguo delegado!
+			// Si cambio de delegado he de cambiar los votos de las votaciones activas en las que no he votado a las que haya dado mi voto a mi antiguo delegado!
 			$sql = 'SELECT polls.topic_id AS topic_id,
 						   polls.poll_option_id AS voto_del1,
 						   delegado2.poll_option_id AS voto_del2

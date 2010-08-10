@@ -54,21 +54,34 @@ function calc_delegated_votes($db, $topic_id, $user_id) {
 		$delegated_votes -= $fila['direct_vote'];
 	}	
 	
-	// Si mi delegado ha votado le resto mi voto personal antes de votar
+	// Calculo si he votado anteriormente.
 	$sql = 'SELECT poll_option_id
-			FROM ' . POLL_VOTES_TABLE . ' 
+			FROM ' . POLL_VOTES_TABLE . '
 			WHERE topic_id = ' . (int) $topic_id . '
-			AND vote_user_id = ' . (int) $delegated_user;
+			AND vote_user_id = ' . (int) $user_id;
 	$result = $db->sql_query($sql);
-	$fila = $db->sql_fetchrow($result);
+	$direct_vote_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
-	if ( $fila ) {
-		$delegated_user_vote = $fila['poll_option_id'];
-		$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
-		        SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes . '
-		        WHERE topic_id = ' . (int) $topic_id . '
-		        AND poll_option_id = ' . (int) $delegated_user_vote;
-		$db->sql_query($sql);
+	
+	// Si mi delegado ha votado y no he votado ya directamente antes le resto mi voto personal antes de votar.
+	
+	if (!$direct_vote_row) {
+		$sql = 'SELECT poll_option_id
+				FROM ' . POLL_VOTES_TABLE . ' 
+				WHERE topic_id = ' . (int) $topic_id . '
+				AND vote_user_id = ' . (int) $delegated_user;
+		$result = $db->sql_query($sql);
+		$delegated_vote_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ( $delegated_vote_row ) {
+			$delegated_user_vote = $delegated_vote_row['poll_option_id'];
+			$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . '
+					SET poll_option_total = poll_option_total - 1 - ' . $delegated_votes . '
+					WHERE topic_id = ' . (int) $topic_id . '
+					AND poll_option_id = ' . (int) $delegated_user_vote;
+			$db->sql_query($sql);
+		}
 	}
 	
 	return $delegated_votes;
