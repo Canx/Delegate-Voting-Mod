@@ -9,7 +9,7 @@
 		<title lang="es"><![CDATA[Delegate Voting Mod]]></title>
 		<description lang="es"><![CDATA[Modificación para permitir la votación delegada en el sistema de votación de phpbb. La elección del delegado se hace desde el UCP, añadiendo el módulo correspondiente.
 
-De momento se ha implementado la delegación básica de voto, si permitir más saltos.]]></description>
+De momento se ha implementado la delegación básica de voto.]]></description>
 		<author-group>
 			<author>
 				<realname><![CDATA[Ruben Cancho]]></realname>
@@ -25,8 +25,52 @@ De momento se ha implementado la delegación básica de voto, si permitir más s
 		</installation>
 	</header>
 	<action-group>
+		<!-- @todo 1 Añadir fila con delegado "0" -->
+		<sql><![CDATA[CREATE TABLE phpbb_poll_delegate(user_id mediumint( 8 ) , is_delegate tinyint( 1 ) , delegated_user mediumint( 8 ), delegated_votes mediumint( 8 ))]]></sql>;
+		<sql><![CDATA[ALTER TABLE phpbb_poll_delegate ADD PRIMARY KEY ( user_id )]]></sql>
+		<sql><![CDATA[ALTER TABLE phpbb_poll_delegate ADD FOREIGN KEY ( delegated_user ) REFERENCES phpbb_users( user_id )]]></sql>
+		<sql><![CDATA[ALTER TABLE phpbb_poll_delegate ADD FOREIGN KEY ( user_id ) REFERENCES phpbb_users( user_id )]]></sql>
+		
 		<copy>
-			<file/>
+			<file from="root/includes/ucp/ucp_delegate.php" to="includes/ucp/ucp_delegate.php" />
+			<file from="root/includes/ucp/info/ucp_delegate.php" to="includes/ucp/info/ucp_delegate.php" />
+			<file from="root/language/en/mods/info_ucp_delegate.php" to="language/en/mods/info_ucp_delegate.php" />
+			<file from="root/styles/prosilver/template/ucp_delegate_select.php" to="styles/prosilver/template/ucp_delegate_select.php" />
 		</copy>
+		
+		<open src="viewtopic.php">
+			<edit>
+				<find><![CDATA[include($phpbb_root_path . 'includes/bbcode.' . $phpEx);]]></find>
+				<action type="after-add"><![CDATA[include($phpbb_root_path . 'includes/functions_voting.' . $phpEx); // Delegate-Mod]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+			trigger_error($message);
+		}]]></find>
+				<action type="after-add"><![CDATA[		$db->sql_transaction('begin'); // Delegate-Mod]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[				SET poll_option_total = poll_option_total + 1]]></find>
+				<inline-edit>
+					<inline-find><![CDATA[				SET poll_option_total = poll_option_total + 1]]></inline-find>
+					<inline-action type="after-add"><![CDATA[ + ' . $delegated_votes . ' ]]></inline-action>
+				</inline-edit>
+			</edit>
+			<edit>
+				<find><![CDATA[					SET poll_option_total = poll_option_total - 1]]></find>
+				<inline-edit>
+					<inline-find><![CDATA[					SET poll_option_total = poll_option_total - 1]]></inline-find>
+					<inline-action type="after-add"><![CDATA[ - ' . $delegated_votes .']]></inline-action>
+				</inline-edit>
+			</edit>
+			<edit>
+				<find><![CDATA[				}
+			}
+		}]]></find>
+				<action type="after-add"><![CDATA[		
+		$db->sql_transaction('commit'); // Delegate-Mod]]></action>
+			</edit>
+		</open>
+		<!-- @todo 1 Modificar constants.php para añadir "define('POLL_DELEGATE_TABLE',	$table_prefix . 'poll_delegate'); -->
 	</action-group>
 </mod>
