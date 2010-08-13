@@ -35,7 +35,7 @@ De momento se ha implementado la delegación básica de voto.]]></description>
 			<file from="root/includes/ucp/ucp_delegate.php" to="includes/ucp/ucp_delegate.php" />
 			<file from="root/includes/ucp/info/ucp_delegate.php" to="includes/ucp/info/ucp_delegate.php" />
 			<file from="root/language/en/mods/info_ucp_delegate.php" to="language/en/mods/info_ucp_delegate.php" />
-			<file from="root/styles/prosilver/template/ucp_delegate_select.php" to="styles/prosilver/template/ucp_delegate_select.php" />
+			<file from="root/styles/prosilver/template/ucp_delegate_select.html" to="styles/prosilver/template/ucp_delegate_select.html" />
 		</copy>
 		
 		<open src="viewtopic.php">

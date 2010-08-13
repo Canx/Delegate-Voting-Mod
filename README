@@ -1,4 +1,10 @@
 README
 ------
+Delegate-mod es un mod para phpbb3 que añade capacidades de delegación al sistema de votatión. Ha sido desarrollado para phpbb3.0.7pl 
 
-* Requisitos y diseño [http://docs.google.com/View?id=dd4vcdf8_65c7k6gsck]
+* Documento de requisitos y diseño [http://docs.google.com/View?id=dd4vcdf8_65c7k6gsck]
+
+* Instalación
+Descomprime el archivo delegate-mod.zip, abre el archivo install.xml en un navegador y sigue sus pasos.
+<POR ACABAR>
+
