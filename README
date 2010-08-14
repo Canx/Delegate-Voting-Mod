@@ -5,6 +5,9 @@ Delegate-mod es un mod para phpbb3 que añade capacidades de delegación al sist
 * Documento de requisitos y diseño [http://docs.google.com/View?id=dd4vcdf8_65c7k6gsck]
 
 * Instalación
-Descomprime el archivo delegate-mod.zip, abre el archivo install.xml en un navegador y sigue sus pasos.
-<POR ACABAR>
+1.- Sobre una instalación de phpbb3.0.7 con Automod instalado, sube y instala el archivo mod-delegate.zip utilizando Automod.
+2.- Posteriormente desde el panel de administración en System -> Module Management -> UCP crea un nuevo módulo de tipo "Categoria" que se llame "Votaciones" y activalo.
+3.- Dentro de "Votaciones" añade el módulo "UCP_DELEGATE -> select delegate" y actívalo.
+4.- Ahora ya puedes probar a realizar votaciones y a utilizar la funcionalidad de la nueva pestaña en el UCP.
+
 

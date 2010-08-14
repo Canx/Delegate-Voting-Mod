@@ -71,6 +71,13 @@ De momento se ha implementado la delegación básica de voto.]]></description>
 		$db->sql_transaction('commit'); // Delegate-Mod]]></action>
 			</edit>
 		</open>
+		<open src="includes/constants.php">
+			<edit>
+				<find><![CDATA[// Additional tables]]></find>
+				<action type="after-add"><![CDATA[define('POLL_DELEGATE_TABLE',		$table_prefix . 'poll_delegate');]]></action>
+			</edit>
+		</open>
+
 		<!-- @todo 1 Modificar constants.php para añadir "define('POLL_DELEGATE_TABLE',	$table_prefix . 'poll_delegate'); -->
 	</action-group>
 </mod>
