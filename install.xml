@@ -32,10 +32,7 @@ De momento se ha implementado la delegación básica de voto.]]></description>
 		<sql><![CDATA[ALTER TABLE phpbb_poll_delegate ADD FOREIGN KEY ( user_id ) REFERENCES phpbb_users( user_id )]]></sql>
 		
 		<copy>
-			<file from="root/includes/ucp/ucp_delegate.php" to="includes/ucp/ucp_delegate.php" />
-			<file from="root/includes/ucp/info/ucp_delegate.php" to="includes/ucp/info/ucp_delegate.php" />
-			<file from="root/language/en/mods/info_ucp_delegate.php" to="language/en/mods/info_ucp_delegate.php" />
-			<file from="root/styles/prosilver/template/ucp_delegate_select.html" to="styles/prosilver/template/ucp_delegate_select.html" />
+			<file from="root/*.*" to="*.*" />
 		</copy>
 		
 		<open src="viewtopic.php">
