@@ -1,5 +1,12 @@
 <!-- INCLUDE ucp_header.html -->
- 
+
+<!-- IF S_ERROR -->
+<div class="errorbox">
+	<h3>{L_WARNING}</h3>
+	<p>{ERROR_MSG}</p>
+</div>
+<!-- ENDIF -->
+
 <form id="ucp" method="post" action="{S_UCP_ACTION}">
    <fieldset>
       <legend>Delegación</legend>

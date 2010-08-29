@@ -6,7 +6,9 @@
 	<header>
 		<meta name="generator" content="MODX file generated with PP MODX Creator by tumba25 (online version)"/>
 		<license><![CDATA[http://opensource.org/licenses/gpl-license.php GNU General Public License v2]]></license>
-		<title lang="es"><![CDATA[Delegate Voting Mod]]></title>
+		<title lang="en"><![CDATA[Delegate Voting Mod]]></title>
+		<title lang="es"><![CDATA[Votacion Delegada Mod]]></title>
+		<description lang="en">![CDATA[Mod to add delegate voting]]</description>
 		<description lang="es"><![CDATA[Modificación para permitir la votación delegada en el sistema de votación de phpbb. La elección del delegado se hace desde el UCP, añadiendo el módulo correspondiente.
 
 De momento se ha implementado la delegación básica de voto.]]></description>
@@ -74,7 +76,7 @@ De momento se ha implementado la delegación básica de voto.]]></description>
 				<action type="after-add"><![CDATA[define('POLL_DELEGATE_TABLE',		$table_prefix . 'poll_delegate');]]></action>
 			</edit>
 		</open>
-
-		<!-- @todo 1 Modificar constants.php para añadir "define('POLL_DELEGATE_TABLE',	$table_prefix . 'poll_delegate'); -->
+		
+		<!-- @todo 1 Añadir styles/prosilver/template/viewtopic_body.html como modificación -->
 	</action-group>
 </mod>

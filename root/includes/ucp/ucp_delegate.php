@@ -13,7 +13,7 @@ class ucp_delegate
       $submit = (isset($_POST['submit'])) ? true : false;
       $delegado = '';
       
-	
+	  // @todo 1 El usuario ha de estar en el grupo de Afiliados para poder delegar!
       	 
       // Cargamos la información de delegación y si no existe la creamos con valores vacíos.
 	  $sql = 'SELECT delegated_user, is_delegate
@@ -109,7 +109,7 @@ class ucp_delegate
 			
 			$sql = 'UPDATE  ' . POLL_DELEGATE_TABLE . '
 					SET delegated_user = ' . $nuevo_delegado_id . '
-					WHERE user_id = ' . $user->data['user_id'];
+					WHERE user_id = ' . (int) $user->data['user_id'];
 			$db->sql_query($sql);
 			
 			if ($delegado_id) {
@@ -134,6 +134,7 @@ class ucp_delegate
 	         FROM ' . USERS_TABLE . ' AS users,' . POLL_DELEGATE_TABLE . ' AS polldel
 	         WHERE users.user_id = polldel.user_id
 	         AND is_delegate = 1
+	         AND polldel.user_id != ' . (int) $user->data['user_id'] . '
 	         ORDER BY delegated_votes DESC';
 	 $result = $db->sql_query($sql);
 	 
